@@ -15,7 +15,7 @@ tags:
 
 #### 导包部分
 ```python
-# `python2.5` 版本加入 `with` 语句，低于 `2.5` 需要引入，高于则忽略。
+# python2.5 版本加入 with 语句，低于 2.5 需要引入，高于则忽略。
 from __future__ import with_statement
 
 import os
@@ -24,17 +24,17 @@ import sys
 # 没有用到
 from threading import local
 
-# `jinja2` 模板引擎
+# jinja2 模板引擎
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 
-# `Flask` 的 `Request` 和 `Response` 继承自 `werkzeug` 的 `Request` 和 `Response`
+# Flask 的 Request 和 Response 继承自 werkzeug 的 Request 和 Response
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 
-# 最后几行 `_request_ctx_stack`, `current_app`, `request`, `session`, `g` 用到。
+# 最后几行 _request_ctx_stack, current_app, request, session, g 用到。
 from werkzeug.local import LocalStack, LocalProxy
 
-# 用于测试请求上下文，在 `Flask` 类的方法 `test_request_context` 中调用，已失效。
-# 最新版 `test_request_context` 方法调用 `flask.testing` 的 `make_test_environ_builder`，最终调用 `werkzeug.test` 的 `EnvironBuilder`。
+# 用于测试请求上下文，在 Flask 类的方法 test_request_context 中调用，已失效。
+# 最新版 test_request_context 方法调用 flask.testing 的 make_test_environ_builder，最终调用 werkzeug.test 的 EnvironBuilder。
 from werkzeug import create_environ
 
 
@@ -47,7 +47,7 @@ from werkzeug.routing import Map, Rule
 # 错误处理
 from werkzeug.exceptions import HTTPException, InternalServerError
 
-# `flask` 自带的 `session` 用到
+# flask 自带的 session 用到
 from werkzeug.contrib.securecookie import SecureCookie
 
 # 没有用到，作为对外接口
@@ -107,7 +107,7 @@ class _RequestContext(object):
 ```python
 def url_for(endpoint, **values):
     """函数跳转
-    endpoint: Flask 类有个 `view_functions` 字典，存储的就是 endpoint 和 视图函数的映射关系，默认 endpoint 是视图函数的名字
+    endpoint: Flask 类有个 view_functions 字典，存储的就是 endpoint 和 视图函数的映射关系，默认 endpoint 是视图函数的名字
     values: 路由传过来的参数
     """
     return _request_ctx_stack.top.url_adapter.build(endpoint, values)
@@ -149,7 +149,7 @@ def render_template_string(source, **context):
 
 def _default_template_ctx_processor():
     """
-    模板处理，使得在所有模板中可以使用 `request`, `session` 和 `g` 三个全局变量
+    模板处理，使得在所有模板中可以使用 request, session 和 g 三个全局变量
     """
     reqctx = _request_ctx_stack.top
     return dict(
@@ -174,7 +174,7 @@ class Flask(object):
     """
     Flask 类实现了一个 WSGI 应用，只要将包或者模块的名字传递给它
     一旦创建的时候，它将首先注册视图函数、路由映射、模板配置等等几个重要的对象
-    传入包的名字是用于解决应用内部资源的引用，具体请查看 `open_resource` 函数
+    传入包的名字是用于解决应用内部资源的引用，具体请查看 open_resource 函数
     一般情况下，你只需要这样创建：
         from flask import Flask
         app = Flask(__name__)
@@ -186,7 +186,7 @@ class Flask(object):
     # 响应类
     response_class = Response
 
-    # 静态文件路径，设置为 `None` 可以禁用
+    # 静态文件路径，设置为 None 可以禁用
     static_path = '/static'
 
     # 密钥，用于 cookies 签名验证
@@ -202,7 +202,7 @@ class Flask(object):
     )
 
     def __init__(self, package_name):
-        # 调试模式开关，设置 `True` 以打开调试模式
+        # 调试模式开关，设置 True 以打开调试模式
         # 在调试模式下，应用程序出错会有特殊的错误页面以供调试
         # 并且服务会监控文件的变化，文件发生变化会重载服务
         self.debug = False
@@ -214,29 +214,29 @@ class Flask(object):
         self.root_path = _get_package_path(self.package_name)
 
         # 包含所有注册好的视图函数字典，键是函数的名字，也用于生成 URL
-        # 值就是函数本身，可以用 `route` 装饰器注册一个函数
+        # 值就是函数本身，可以用 route 装饰器注册一个函数
         self.view_functions = {}
 
         # 所有注册好的错误处理函数，键是错误代码，值是处理函数
-        # 可以用 `errorhandler` 注册一个错误处理函数
+        # 可以用 errorhandler 注册一个错误处理函数
         self.error_handlers = {}
 
-        # 预处理函数，每次请求之前会执行，用 `before_request` 装饰器注册
+        # 预处理函数，每次请求之前会执行，用 before_request 装饰器注册
         self.before_request_funcs = []
 
         # 后处理函数，每次请求完成以后执行，函数会截获响应并且改变它
-        # 用 `after_request` 装饰器注册
+        # 用 after_request 装饰器注册
         self.after_request_funcs = []
 
-        # 模板上下文处理器，默认有一个处理函数 `_default_template_ctx_processor`
-        # 默认的函数功能是向模板上下文添加三个对象 `request` `session` `g`
+        # 模板上下文处理器，默认有一个处理函数 _default_template_ctx_processor
+        # 默认的函数功能是向模板上下文添加三个对象 request, session, g
         # 每个函数执行不需要参数，返回值为字典，用于填充模板上下文
         self.template_context_processors = [_default_template_ctx_processor]
 
-        # 路由映射，在 `werkzeug.routing.Map`
+        # 路由映射，在 werkzeug.routing.Map
         self.url_map = Map()
 
-        # 架起一个静态资源服务，一般用于开发环境，生产环境用 `nginx`
+        # 架起一个静态资源服务，一般用于开发环境，生产环境用 nginx
         if self.static_path is not None:
             self.url_map.add(Rule(self.static_path + '/<filename>',
                                   build_only=True, endpoint='static'))
@@ -252,8 +252,8 @@ class Flask(object):
         self.jinja_env = Environment(loader=self.create_jinja_loader(),
                                      **self.jinja_options)
         # 这是两个模板能用到的函数
-        # `url_for` 用于根据 endpoint 获取 URL
-        # `get_flashed_messages` 用于获取消息闪现
+        # url_for 用于根据 endpoint 获取 URL
+        # get_flashed_messages 用于获取消息闪现
         self.jinja_env.globals.update(
             url_for=url_for,
             get_flashed_messages=get_flashed_messages
@@ -261,7 +261,7 @@ class Flask(object):
 
     def create_jinja_loader(self):
         """
-        加载模板目录，默认目录为 `templates`
+        加载模板目录，默认目录为 templates
         """
         if pkg_resources is None:
             return FileSystemLoader(os.path.join(self.root_path, 'templates'))
@@ -269,8 +269,8 @@ class Flask(object):
 
     def update_template_context(self, context):
         """
-        为模板上下文注入几个常用的变量，比如 `request` `session` `g`
-        `context` 为填充模板上下文的字典
+        为模板上下文注入几个常用的变量，比如 request, session, g
+        context 为填充模板上下文的字典
         """
         reqctx = _request_ctx_stack.top
         for func in self.template_context_processors:
@@ -304,8 +304,8 @@ class Flask(object):
 
     def open_session(self, request):
         """
-        创建一个 `session`，`secret_key` 必须设置
-        基于 `werkzeug.contrib.securecookie.SecureCookie`
+        创建一个 session，secret_key 必须设置
+        基于 werkzeug.contrib.securecookie.SecureCookie
         """
         key = self.secret_key
         if key is not None:
@@ -314,16 +314,16 @@ class Flask(object):
 
     def save_session(self, session, response):
         """
-        保存 `session`
+        保存 session
         """
         if session is not None:
             session.save_cookie(response, self.session_cookie_name)
 
     def add_url_rule(self, rule, endpoint, **options):
         """
-        创建 URL 和视图函数的映射规则，等同于 `route` 装饰器
-        只是 `add_url_rule` 并没有为视图函数注册一个 `endpoint`
-        这一步也就是向 `view_functions` 字典添加 endpoint: view_func 键值对
+        创建 URL 和视图函数的映射规则，等同于 route 装饰器
+        只是 add_url_rule 并没有为视图函数注册一个 endpoint
+        这一步也就是向 view_functions 字典添加 endpoint: view_func 键值对
         以下：
             @app.route('/')
             def index():
@@ -333,7 +333,7 @@ class Flask(object):
                 pass
             app.add_url_rule('index', '/')
             app.view_functions['index'] = index
-        options: 参数选项详见 `werkzeug.routing.Rule`
+        options: 参数选项详见 werkzeug.routing.Rule
         """
         options['endpoint'] = endpoint
         options.setdefault('methods', ('GET',))
@@ -350,19 +350,19 @@ class Flask(object):
         变量部分可以用尖括号(``/user/<username>``)指定，默认接受任何不带斜杆的字符串
         变量也可以指定一个转换器，以指定类型的参数：
         =========== ===========================================
-        `int`       整数
-        `float`     浮点数
-        `path`      路径
+        int         整数
+        float       浮点数
+        path        路径
         =========== ===========================================
 
-        值得注意的是 `Flask` 如何处理结尾的斜杆，核心思路是保证每个 URL 唯一：
+        值得注意的是 Flask 如何处理结尾的斜杆，核心思路是保证每个 URL 唯一：
             1、如果配置了一个带结尾斜杆的 URL，用户请求不带结尾斜杆的这个 URL，则跳转到带结尾斜杆的页面。
             2、如果配置了一个不带结尾斜杆的 URL，用户请求带结尾斜杆的这个 URL，则触发404错误。
-        这和 `web` 服务器处理静态资源 `static` 的逻辑是一样的
+        这和 web 服务器处理静态资源 static 的逻辑是一样的
 
         参数：
         rule: URL 字符串
-        methods: 允许的请求方法，是个列表，默认只接受 `GET` 请求和隐式的 `HEAD`
+        methods: 允许的请求方法，是个列表，默认只接受 GET 请求和隐式的 HEAD
         subdomain: 指定子域名
         strict_slashes: 上述对结尾斜杆处理的开关
         options: 参数选项详见 `werkzeug.routing.Rule`
@@ -410,7 +410,7 @@ class Flask(object):
     def match_request(self):
         """
         根据当前请求的路由去和url_map匹配，拿到 enpoint 和 view_args
-        endpoint: 端点，是view_functions中对应视图函数的key
+        endpoint: 端点，是 view_functions 中对应视图函数的key
         view_args: 视图函数的参数
         """
         rv = _request_ctx_stack.top.url_adapter.match()
@@ -419,10 +419,10 @@ class Flask(object):
 
     def dispatch_request(self):
         """
-        首先调用上面的 `match_request` 方法拿到 `endpoint` 和 `view_args`
-        根据 `endpoint` 可以从 `view_functions` 找到对应的视图函数
-        再传入视图函数的参数 `view_args`，并返回结果，这个结果只是函数的返回值
-        并没有包装成响应类 `response_class`，可以调用 `make_response` 方法生成响应
+        首先调用上面的 match_request 方法拿到 endpoint 和 view_args
+        根据 endpoint 可以从 view_functions 找到对应的视图函数
+        再传入视图函数的参数 view_args，并返回结果，这个结果只是函数的返回值
+        并没有包装成响应类 response_class，可以调用 make_response 方法生成响应
         如果函数执行失败，则根据错误码调用对应的错误处理函数
         """
         try:
@@ -441,7 +441,7 @@ class Flask(object):
 
     def make_response(self, rv):
         """
-        将视图函数的返回值包装成一个真实的响应类 `response_class`
+        将视图函数的返回值包装成一个真实的响应类 response_class
         函数的返回值支持以下几种类型：
         ======================= ===========================================
         response_class:         响应类本身，原样返回
@@ -456,7 +456,7 @@ class Flask(object):
         if isinstance(rv, self.response_class):
             return rv
 
-        # `basestring` 是 `str` 和 `unicode` 的超类，只支持 `python2`
+        # basestring 是 str 和 unicode 的超类，只支持 python2
         if isinstance(rv, basestring):
             return self.response_class(rv)
 
@@ -467,7 +467,7 @@ class Flask(object):
 
     def preprocess_request(self):
         """
-        在分发请求之前执行所有的预处理函数，如果预处理函数有返回值不为 `None`
+        在分发请求之前执行所有的预处理函数，如果预处理函数有返回值不为 None
         则返回结果并中断其余的预处理
         """
         for func in self.before_request_funcs:
@@ -506,8 +506,8 @@ class Flask(object):
     def request_context(self, environ):
         """
         通过给定的 WSGI 环境创建一个请求上下文，并把它绑定到当前上下文中
-        必须通过 `with` 语句使用，因为 `request` 对象只在请求上下文
-        也就是 `with` 语句块中起作用
+        必须通过 with 语句使用，因为 request 对象只在请求上下文
+        也就是 with 语句块中起作用
         用法如下：
             with app.request_context(environ):
                 do_something_with(request)
@@ -518,12 +518,12 @@ class Flask(object):
 
     def test_request_context(self, *args, **kwargs):
         """
-        测试请求上下文，参数详见 `werkzeug.create_environ`
+        测试请求上下文，参数详见 werkzeug.create_environ
         """
         return self.request_context(create_environ(*args, **kwargs))
 
     def __call__(self, environ, start_response):
-        """调用 `wsgi_app` 方法"""
+        """调用 wsgi_app 方法"""
         return self.wsgi_app(environ, start_response)
 ```
 

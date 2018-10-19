@@ -37,7 +37,6 @@ from werkzeug.local import LocalStack, LocalProxy
 # 最新版 test_request_context 方法调用 flask.testing 的 make_test_environ_builder，最终调用 werkzeug.test 的 EnvironBuilder。
 from werkzeug import create_environ
 
-
 from werkzeug.utils import cached_property
 from werkzeug.wsgi import SharedDataMiddleware
 
@@ -68,6 +67,7 @@ except (ImportError, AttributeError):
 如果你想要自定义 `Request` 和 `Response`，你可以继承这两个类，然后指定 `Flask` 的 `request_class` 和 `response_class`
 ```python
 class Request(RequestBase):
+    """请求类"""
 
     def __init__(self, environ):
         RequestBase.__init__(self, environ)  # WSGI 环境
@@ -76,6 +76,7 @@ class Request(RequestBase):
 
 
 class Response(ResponseBase):
+    """响应类"""
 
     default_mimetype = 'text/html'
 
@@ -534,5 +535,216 @@ current_app = LocalProxy(lambda: _request_ctx_stack.top.app)
 request = LocalProxy(lambda: _request_ctx_stack.top.request)
 session = LocalProxy(lambda: _request_ctx_stack.top.session)
 g = LocalProxy(lambda: _request_ctx_stack.top.g)
+```
 
+#### `werkzeug` 的 `Local`, `LocalStack` 和 `LocalProxy`
+`Flask` 中有两个上下文（`Context `）：应用上下文（`App Context`）、请求上下文（`Request Context`）
+上下文就是函数运行时所需要的外部变量，当我们运行一个简单的求和函数 `sum` 是不需要外部变量的
+而像 `Flask` 中的视图函数运行需要知道当前的请求的路由、表单和请求方法等等一些信息，
+`Django` 和 `Tornado` 把视图函数所需要的外部信息封装成一个对象 `Request`，并把这个对象当作参数传给视图函数，
+无论视图函数有没有用到，所以编写 `Django` 的视图函数会到处都见到一个 `request` 参数，
+而 `Flask` 则使用了类似 `Thread Local` 的对象，它可以隔离多线程/协程之间的状态，使得多线程/协程像操作一个全局变量一样操作各自的状态而互不影响
+原理就是使用当前的线程ID作为命名空间，保存多份字典，每个线程只获取各自线程ID对应的字典
+`Flask` 并没有使用 `Python` 标准库的 `Thread Local`，而是用了 `werkzeug` 实现的 `Local`
+
+`Local` 和 `threading.local` 相似，但是 `Local` 在 `Greenlet` 可用的情况下优先使用 `getcurrent` 获取当前线程ID，用以支持 `Gevent` 调度
+`Local` 还有一个 `__release_local__` 方法，用以释放当前线程存储的状态信息。
+
+`LocalStack` 是基于 `Local` 实现的栈结构，可以入栈（`push`）、出栈（`pop`）和获取栈顶对象（`top`）
+
+`LocalProxy` 是作为 `Local` 的一个代理模式，它接受一个 `callable` 对象，注意参数不是 `Local` 实例，这个 `callable` 对象返回的结果才是 `Local` 实例
+所有对于 `LocalProxy` 对象的操作都会转发到对应的 `Local` 上
+
+
+```python
+# 优先使用 Greenlet 的线程ID
+try:
+    from greenlet import getcurrent as get_ident
+except ImportError:
+    try:
+        from thread import get_ident
+    except ImportError:
+        from _thread import get_ident
+
+
+class Local(object):
+    # 固定属性
+    __slots__ = ('__storage__', '__ident_func__')
+
+    def __init__(self):
+        # 数据存储，是一个字典
+        object.__setattr__(self, '__storage__', {})
+
+        # 获取当前线程ID的方法
+        object.__setattr__(self, '__ident_func__', get_ident)
+
+    def __iter__(self):
+        """以生成器的方式返回字典的所有元素"""
+        return iter(self.__storage__.items())
+
+    def __call__(self, proxy):
+        """创建一个 LocalProxy"""
+        return LocalProxy(self, proxy)
+
+    def __release_local__(self):
+        """清空当前线程/协程所保存的数据"""
+        self.__storage__.pop(self.__ident_func__(), None)
+
+    def __getattr__(self, name):
+        """属性访问"""
+        try:
+            return self.__storage__[self.__ident_func__()][name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        """属性设置"""
+        ident = self.__ident_func__()
+        storage = self.__storage__
+        try:
+            storage[ident][name] = value
+        except KeyError:
+            storage[ident] = {name: value}
+
+    def __delattr__(self, name):
+        """属性删除"""
+        try:
+            del self.__storage__[self.__ident_func__()][name]
+        except KeyError:
+            raise AttributeError(name)
+
+
+class LocalStack(object):
+
+    """
+    Local 的栈结构实现
+    """
+
+    def __init__(self):
+        # Local 实例
+        self._local = Local()
+
+    def __release_local__(self):
+        # 释放当前线程的数据
+        self._local.__release_local__()
+
+    def _get__ident_func__(self):
+        # 返回获取当前线程ID的函数
+        return self._local.__ident_func__
+
+    def _set__ident_func__(self, value):
+        # 
+        object.__setattr__(self._local, '__ident_func__', value)
+    __ident_func__ = property(_get__ident_func__, _set__ident_func__)
+    del _get__ident_func__, _set__ident_func__
+
+    def __call__(self):
+        """返回一个 LocalProxy 对象，该对象始终指向 LocalStack 实例的栈顶元素"""
+        def _lookup():
+            rv = self.top
+            if rv is None:
+                raise RuntimeError('object unbound')
+            return rv
+        return LocalProxy(_lookup)
+
+    def push(self, obj):
+        """入栈"""
+        rv = getattr(self._local, 'stack', None)
+        if rv is None:
+            self._local.stack = rv = []
+        rv.append(obj)
+        return rv
+
+    def pop(self):
+        """出栈"""
+        stack = getattr(self._local, 'stack', None)
+        if stack is None:
+            return None
+        elif len(stack) == 1:
+            release_local(self._local)
+            return stack[-1]
+        else:
+            return stack.pop()
+
+    @property
+    def top(self):
+        """获取栈顶元素"""
+        try:
+            return self._local.stack[-1]
+        except (AttributeError, IndexError):
+            return None
+
+
+@implements_bool
+class LocalProxy(object):
+
+    """
+    Local 的代理模式实现，所有对 LocalProxy 对象的操作，包括属性访问、方法调用和二元操作
+    都会转发到那个 callable 参数返回的 Local 对象上
+    """
+    __slots__ = ('__local', '__dict__', '__name__', '__wrapped__')
+
+    def __init__(self, local, name=None):
+        # 把 callable 参数绑定到 __local 属性上
+        object.__setattr__(self, '_LocalProxy__local', local)
+        # 代理名字
+        object.__setattr__(self, '__name__', name)
+        if callable(local) and not hasattr(local, '__release_local__'):
+            # 注意这里的参数 local 仅仅是一个 callable 对象
+            # 该对象执行返回的结果才是 Local 实例
+            object.__setattr__(self, '__wrapped__', local)
+
+    def _get_current_object(self):
+        """获取当前 Local 实例"""
+        if not hasattr(self.__local, '__release_local__'):
+            return self.__local()
+        try:
+            return getattr(self.__local, self.__name__)
+        except AttributeError:
+            raise RuntimeError('no object bound to %s' % self.__name__)
+
+    @property
+    def __dict__(self):
+        try:
+            return self._get_current_object().__dict__
+        except RuntimeError:
+            raise AttributeError('__dict__')
+
+    def __repr__(self):
+        try:
+            obj = self._get_current_object()
+        except RuntimeError:
+            return '<%s unbound>' % self.__class__.__name__
+        return repr(obj)
+
+    def __bool__(self):
+        try:
+            return bool(self._get_current_object())
+        except RuntimeError:
+            return False
+
+    def __unicode__(self):
+        try:
+            return unicode(self._get_current_object())  # noqa
+        except RuntimeError:
+            return repr(self)
+
+    def __dir__(self):
+        try:
+            return dir(self._get_current_object())
+        except RuntimeError:
+            return []
+
+    def __getattr__(self, name):
+        if name == '__members__':
+            return dir(self._get_current_object())
+        return getattr(self._get_current_object(), name)
+
+    def __setitem__(self, key, value):
+        self._get_current_object()[key] = value
+
+    def __delitem__(self, key):
+        del self._get_current_object()[key]
+
+    # 下面的源码省略，LocalProxy 重写了所有的魔法方法
 ```

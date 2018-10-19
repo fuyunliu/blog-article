@@ -13,7 +13,8 @@ Django 和 Flask 应用开启 debug 模式之后都能检测代码的变化然�
 
 <!-- toc -->
 
-下面是 `werkzeug` 中的 `_reloader` 模块中的 `run_with_reloader` 函数
+下面是 `werkzeug` 中的 `_reloader` 模块中的 `run_with_reloader` 函数。
+
 ```python
 def run_with_reloader(main_func, extra_files=None, interval=1,
                       reloader_type='auto'):
@@ -35,6 +36,7 @@ def run_with_reloader(main_func, extra_files=None, interval=1,
 ```
 
 用法如下
+
 ```python
 import time
 
@@ -51,6 +53,7 @@ if __name__ == '__main__':
 ```
 
 但是执行函数不能传参，修改 `run_with_reloader` 如下
+
 ```python
 def run_with_reloader(main_func, args=(), kwargs=None,
                       extra_files=None, interval=1,
@@ -77,6 +80,7 @@ def run_with_reloader(main_func, args=(), kwargs=None,
 ```
 
 然后就能传参了
+
 ```python
 import time
 

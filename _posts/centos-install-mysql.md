@@ -15,25 +15,29 @@ tags:
 
 <!-- toc -->
 
-#### 卸载系统自带的 `Mariadb`
+# 卸载系统自带的 Mariadb
+
 ```sh
 rpm -qa|grep mariadb        # 查询出已安装的 mariadb
 rpm -e --nodeps filename    # 上面列出的所有文件
 rm -f /etc/my.cnf           # 删除配置文件
 ```
 
-#### 创建 `mysql` 用户组
+# 创建 mysql 用户组
+
 ```sh
 groupadd mysql
 useradd -g mysql mysql
 ```
 
-#### 下载安装包
+# 下载安装包
+
 ```sh
 wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.12-linux-glibc2.12-x86_64.tar.xz
 ```
 
-#### 解压文件到目录 `/usr/local`
+# 解压文件到目录 /usr/local
+
 ```sh
 cp mysql-8.0.12-linux-glibc2.12-x86_64.tar.xz /usr/local/mysql-8.0.12-linux-glibc2.12-x86_64.tar.xz
 cd /usr/local
@@ -52,7 +56,8 @@ tar xvJf mysql-8.0.12-linux-glibc2.12-x86_64.tar.xz
 mv mysql-8.0.12-linux-glibc2.12-x86_64 mysql
 ```
 
-#### 配置 `/etc/my.cnf`
+# 配置 /etc/my.cnf
+
 ```sh
 [mysqld_multi]
 mysqld     = /usr/local/mysql/bin/mysqld_safe
@@ -83,7 +88,8 @@ log_bin_index       =/data/mysqldata/data2/mysql-bin.index
 ###############################################################################
 ```
 
-#### 初始化数据目录
+# 初始化数据目录
+
 ```sh
 mkdir /var/lib/mysql
 chown -R mysql:mysql /var/lib/mysql
@@ -102,7 +108,8 @@ cd /usr/local/mysql/bin
 ./mysql_install_db --basedir=/usr/local/mysql --datadir=/data/mysqldata/data2 --user=mysql
 ```
 
-#### 启动实例
+# 启动实例
+
 ```sh
 cd /usr/local/mysql/bin
 mysqld_multi start 1
@@ -110,7 +117,8 @@ mysqld_multi start 2
 mysqld_multi report
 ```
 
-#### 主库创建同步账号
+# 主库创建同步账号
+
 ```sh
 ./mysql -S /var/lib/mysql/mysql1.sock -p your-password
 CREATE USER 'repl'@'%' IDENTIFIED BY 'mysql';
@@ -119,7 +127,8 @@ SHOW MASTER STATUS;
 SHOW BINARY LOGS;
 ```
 
-#### 从库配置
+# 从库配置
+
 ```sh
 # 修改从库的配置文件
 server-id          =2

@@ -13,12 +13,14 @@ GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软�
 
 <!-- toc -->
 
-#### 安装screen
+# 安装 screen
+
 ```sh
 yum install -y screen
 ```
 
-#### screen常用命令
+# screen 常用命令
+
 新建一个Screen Session
 
 ```sh
@@ -38,6 +40,7 @@ screen -r session_name
 ```
 
 分享一个Screen Session
+
 ```sh
 screen -x session_name
 ```
@@ -57,20 +60,25 @@ Ctrl + A ESC
 ```
 
 列表所有的会话
+
 ```sh
 screen -ls
 ```
 
 进入某个会话
+
 ```sh
 screen -r session_name
 ```
 
 如果进不去，则
+
 ```sh
 screen -d session_name
 ```
+
 再
+
 ```sh
 screen -r session_name
 ```

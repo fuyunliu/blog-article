@@ -13,7 +13,8 @@ tags:
 
 <!-- toc -->
 
-#### 导包部分
+# 导包部分
+
 ```python
 # python2.5 版本加入 with 语句，低于 2.5 需要引入，高于则忽略。
 from __future__ import with_statement
@@ -62,9 +63,12 @@ except (ImportError, AttributeError):
 
 ```
 
-#### `Request` 和 `Response`
-`flask` 的 `Request` 和 `Response` 继承自 `werkzeug` 的 `Request` 和 `Response`
-如果你想要自定义 `Request` 和 `Response`，你可以继承这两个类，然后指定 `Flask` 的 `request_class` 和 `response_class`
+# Request 和 Response
+
+`flask` 的 `Request` 和 `Response` 继承自 `werkzeug` 的 `Request` 和 `Response`。
+
+如果你想要自定义 `Request` 和 `Response`，你可以继承这两个类，然后指定 `Flask` 的 `request_class` 和 `response_class`。
+
 ```python
 class Request(RequestBase):
     """请求类"""
@@ -104,7 +108,8 @@ class _RequestContext(object):
             _request_ctx_stack.pop()
 ```
 
-#### 几个有用的函数
+# 几个有用的函数
+
 ```python
 def url_for(endpoint, **values):
     """函数跳转
@@ -169,7 +174,8 @@ def _get_package_path(name):
 
 ```
 
-#### `Flask` 类
+# Flask 类
+
 ```python
 class Flask(object):
     """
@@ -528,7 +534,8 @@ class Flask(object):
         return self.wsgi_app(environ, start_response)
 ```
 
-#### 全局变量
+# 全局变量
+
 ```python
 _request_ctx_stack = LocalStack()
 current_app = LocalProxy(lambda: _request_ctx_stack.top.app)
@@ -537,31 +544,37 @@ session = LocalProxy(lambda: _request_ctx_stack.top.session)
 g = LocalProxy(lambda: _request_ctx_stack.top.g)
 ```
 
-#### `werkzeug` 的 `Local`, `LocalStack` 和 `LocalProxy`
-`Flask` 中有两个上下文（`Context `）：应用上下文（`App Context`）、请求上下文（`Request Context`）
-上下文就是函数运行时所需要的外部变量，当我们运行一个简单的求和函数 `sum` 是不需要外部变量的
-而像 `Flask` 中的视图函数运行需要知道当前的请求的路由、表单和请求方法等等一些信息，
-`Django` 和 `Tornado` 把视图函数所需要的外部信息封装成一个对象 `Request`，并把这个对象当作参数传给视图函数，
-无论视图函数有没有用到，所以编写 `Django` 的视图函数会到处都见到一个 `request` 参数，
-而 `Flask` 则使用了类似 `Thread Local` 的对象，它可以隔离多线程/协程之间的状态，使得多线程/协程像操作一个全局变量一样操作各自的状态而互不影响
-原理就是使用当前的线程ID作为命名空间，保存多份字典，每个线程只获取各自线程ID对应的字典
-`Flask` 并没有使用 `Python` 标准库的 `Thread Local`，而是用了 `werkzeug` 实现的 `Local`
+# werkzeug 的 Local，LocalStack 和 LocalProxy
 
-`Local` 和 `threading.local` 相似，但是 `Local` 在 `Greenlet` 可用的情况下优先使用 `getcurrent` 获取当前线程ID，用以支持 `Gevent` 调度
+`Flask` 中有两个上下文（`Context`）：
+
+        1. 应用上下文（`App Context`）
+        2. 请求上下文（`Request Context`）
+
+上下文就是函数运行时所需要的外部变量，当我们运行一个简单的求和函数 `sum` 是不需要外部变量的，而像 `Flask` 中的视图函数运行需要知道当前的请求的路由、表单和请求方法等等一些信息。
+
+`Django` 和 `Tornado` 把视图函数所需要的外部信息封装成一个对象 `Request`，并把这个对象当作参数传给视图函数，无论视图函数有没有用到，所以编写 `Django` 的视图函数会到处都见到一个 `request` 参数。
+
+而 `Flask` 则使用了类似 `Thread Local` 的对象，它可以隔离多线程/协程之间的状态，使得多线程/协程像操作一个全局变量一样操作各自的状态而互不影响，原理就是使用当前的线程ID作为命名空间，保存多份字典，每个线程只获取各自线程ID对应的字典。
+
+`Flask` 并没有使用 `Python` 标准库的 `Thread Local`，而是用了 `werkzeug` 实现的 `Local`。
+
+`Local` 和 `threading.local` 相似，但是 `Local` 在 `Greenlet` 可用的情况下优先使用 `getcurrent` 获取当前线程ID，用以支持 `Gevent` 调度。
+
 `Local` 还有一个 `__release_local__` 方法，用以释放当前线程存储的状态信息。
 
-`LocalStack` 是基于 `Local` 实现的栈结构，可以入栈（`push`）、出栈（`pop`）和获取栈顶对象（`top`）
+`LocalStack` 是基于 `Local` 实现的栈结构，可以入栈（`push`）、出栈（`pop`）和获取栈顶对象（`top`）。
 
-`LocalProxy` 是作为 `Local` 的一个代理模式，它接受一个 `callable` 对象，注意参数不是 `Local` 实例，这个 `callable` 对象返回的结果才是 `Local` 实例
-所有对于 `LocalProxy` 对象的操作都会转发到对应的 `Local` 上
+`LocalProxy` 是作为 `Local` 的一个代理模式，它接受一个 `callable` 对象，注意参数不是 `Local` 实例，这个 `callable` 对象返回的结果才是 `Local` 实例，所有对于 `LocalProxy` 对象的操作都会转发到对应的 `Local`。 上
 
-当`app = Flask(__name__)` 实例化一个 Flask App 时，`App Context` 并没有立即被入栈，`LocalStack` 栈顶元素是空的，返回 `None` 值，
-`current_app`，`request`，`session` 和 `g` 也是 `unbound` 状态，此时使用这些对象会引发 `RuntimeError`，解决方法是手动将 `app.app_context()` 入栈
-当 `Flask` 应用被 `werkzeug` 自带的开发服务器或者 `gunicorn` 用于生产的这类 WSGI 服务器架起的时候，每一个请求进来之前会自动将请求上下文（`Request Context`）入栈
-应用上下文（`App Context`）在 flask v0.1 版本的源码中没有，后面版本引入，应用上下文也会自动入栈
+当 `app = Flask(__name__)` 实例化一个 **Flask App** 时，`App Context` 并没有立即被入栈，`LocalStack` 栈顶元素是空的，返回 `None` 值，`current_app`，`request`，`session` 和 `g` 也是 `unbound` 状态，此时使用这些对象会引发 `RuntimeError`，解决方法是手动将 `app.app_context()` 入栈。
+
+当 `Flask` 应用被 `werkzeug` 自带的开发服务器或者 `gunicorn` 用于生产的这类 WSGI 服务器架起的时候，每一个请求进来之前会自动将请求上下文（`Request Context`）入栈。
+
+应用上下文（`App Context`）在 flask v0.1 版本的源码中没有，后面版本引入，应用上下文也会自动入栈，后面待看。
 
 `threading.local` 使用：
-![threading.local](/images/threading-local.png) 
+![threading.local](/images/threading-local.png)
 
 `Flask` 的 `App Context` 使用：
 ![App Context](/images/flask-app-context.png)
@@ -643,7 +656,7 @@ class LocalStack(object):
         return self._local.__ident_func__
 
     def _set__ident_func__(self, value):
-        # 
+        # 设置获取当前线程ID的函数
         object.__setattr__(self._local, '__ident_func__', value)
     __ident_func__ = property(_get__ident_func__, _set__ident_func__)
     del _get__ident_func__, _set__ident_func__

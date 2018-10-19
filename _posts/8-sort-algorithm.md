@@ -9,7 +9,8 @@ tags:
 
 <!-- toc -->
 
-#### 插入排序
+# 插入排序
+
 ```python
 def insert_sort(lists):
     count = len(lists)
@@ -26,7 +27,8 @@ def insert_sort(lists):
 
 <!-- more -->
 
-#### 希尔排序
+# 希尔排序
+
 ```python
 def shell_sort(lists):
     count = len(lists)
@@ -48,7 +50,8 @@ def shell_sort(lists):
     return lists
 ```
 
-#### 冒泡排序
+# 冒泡排序
+
 ```python
 def bubble_sort(lists):
     count = len(lists)
@@ -59,7 +62,8 @@ def bubble_sort(lists):
     return lists
 ```
 
-#### 快速排序
+# 快速排序
+
 ```python
 qs = lambda xs: ((len(xs) <= 1 and [xs]) or [qs([x for x in xs[1:] if x < xs[
                  0]]) + [xs[0]] + qs([x for x in xs[1:] if x >= xs[0]])])[0]
@@ -84,7 +88,8 @@ def quick_sort(lists, left=0, right=9):
     return lists
 ```
 
-#### 直接选择排序
+# 直接选择排序
+
 ```python
 def select_sort(lists):
     count = len(lists)
@@ -97,7 +102,8 @@ def select_sort(lists):
     return lists
 ```
 
-#### 堆排序
+# 堆排序
+
 ```python
 def adjust_heap(lists, i, size):
     lchild = 2 * i + 1
@@ -127,7 +133,8 @@ def heap_sort(lists):
     return lists
 ```
 
-#### 归并排序
+# 归并排序
+
 ```python
 def merge(left, right):
     i, j = 0, 0
@@ -153,7 +160,8 @@ def merge_sort(lists):
     return merge(left, right)
 ```
 
-#### 基数排序
+# 基数排序
+
 ```python
 import math
 
@@ -171,7 +179,8 @@ def radix_sort(lists, radix=10):
     return lists
 ```
 
-#### 测试
+# 测试
+
 ```python
 import random
 original_test = list(random.randint(1, 100) for _ in range(10))

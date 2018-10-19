@@ -132,7 +132,6 @@ print([next(brand_new_atm) for _ in range(5)])
 
 `itertools` 模块包含了许多特殊的迭代方法
 
-
 比赛中4匹马可能到达终点的先后顺序的可能情况
 
 ```python

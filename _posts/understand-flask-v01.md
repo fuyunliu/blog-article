@@ -555,6 +555,16 @@ g = LocalProxy(lambda: _request_ctx_stack.top.g)
 `LocalProxy` 是作为 `Local` 的一个代理模式，它接受一个 `callable` 对象，注意参数不是 `Local` 实例，这个 `callable` 对象返回的结果才是 `Local` 实例
 所有对于 `LocalProxy` 对象的操作都会转发到对应的 `Local` 上
 
+当`app = Flask(__name__)` 实例化一个 Flask App 时，`App Context` 并没有立即被入栈，`LocalStack` 栈顶元素是空的，返回 `None` 值，
+`current_app`，`request`，`session` 和 `g` 也是 `unbound` 状态，此时使用这些对象会引发 `RuntimeError`，解决方法是手动将 `app.app_context()` 入栈
+当 `Flask` 应用被 `werkzeug` 自带的开发服务器或者 `gunicorn` 用于生产的这类 WSGI 服务器架起的时候，每一个请求进来之前会自动将请求上下文（`Request Context`）入栈
+应用上下文（`App Context`）在 flask v0.1 版本的源码中没有，后面版本引入，应用上下文也会自动入栈
+
+`threading.local` 使用：
+![threading.local](/images/threading-local.png) 
+
+`Flask` 的 `App Context` 使用：
+![App Context](/images/flask-app-context.png)
 
 ```python
 # 优先使用 Greenlet 的线程ID

@@ -75,6 +75,7 @@ user                =mysql
 server_id           =33306
 log_bin             =/data/mysqldata/data1/mysql-bin
 log_bin_index       =/data/mysqldata/data1/mysql-bin.index
+expire_logs_days    =10  # 按需设置过期时间，表示保留最近10天的日志
 ###############################################################################
 [mysqld2]
 port                =33307
@@ -85,6 +86,7 @@ user                =mysql
 server_id           =33307
 log_bin             =/data/mysqldata/data2/mysql-bin
 log_bin_index       =/data/mysqldata/data2/mysql-bin.index
+expire_logs_days    =10  # 按需设置过期时间，表示保留最近10天的日志
 ###############################################################################
 ```
 
@@ -104,8 +106,16 @@ mkdir /data/mysqldata/data2
 chown -R mysql:mysql /data/mysqldata/data2
 
 cd /usr/local/mysql/bin
+
+# 这种初始化数据库目录的方式过时了
 ./mysql_install_db --basedir=/usr/local/mysql --datadir=/data/mysqldata/data1 --user=mysql
 ./mysql_install_db --basedir=/usr/local/mysql --datadir=/data/mysqldata/data2 --user=mysql
+
+# 新的初始化数据库目录方式，会在终端打印一个临时登入密码。
+./mysqld --initialize --basedir=/usr/local/mysql --datadir=/data/mysqldata/data1 --user=mysql --console
+./mysqld --initialize --basedir=/usr/local/mysql --datadir=/data/mysqldata/data2 --user=mysql --console
+
+
 ```
 
 # 启动实例
@@ -120,11 +130,38 @@ mysqld_multi report
 # 主库创建同步账号
 
 ```sh
+# 用刚才初始化数据库目录生成的临时密码登入
 ./mysql -S /var/lib/mysql/mysql1.sock -p your-password
-CREATE USER 'repl'@'%' IDENTIFIED BY 'mysql';
+
+# 如果忘记密码，可以在 my.cnf 的 mysqld 块中添加一行 skip-grant-tables = 1
+# 可以进行无密码登入，修改成功之后去掉这一行然后重启数据库。
+
+# 修改 root 密码
+USE mysql;
+UPDATE user SET authentication_string = PASSWORD('new-password'), password_expired = 'N', password_last_changed = NOW() WHERE user = 'root';
+FLUSH PRIVILEGES;
+
+# 授权账户使得局域网内的机器可以访问数据库
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'new-password' WITH GRANT OPTION;
+
+# 创建一个同步账户
+CREATE USER 'repl'@'%' IDENTIFIED BY 'repl-password';
 GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+
+# 查看状态
 SHOW MASTER STATUS;
 SHOW BINARY LOGS;
+
+# 如果忘记设置日志过期时间，可以进入数据库进行全局设置，并手动清理过期日志
+# 不要在数据库目录进行删除日志，这样会使得数据库日志索引不一致，导致自动清理失效
+SET GLOBAL EXPIRE_LOGS_DAYS = 10;
+FLUSH LOGS;  # 触发日志清理，一般是在有新的日志生成的时候触发检查一次。
+SHOW BINARY LOGS;
+
+# 也可以手动删除某个日志之前的所有日志
+PURGE BINARY LOGS TO 'mysql-bin.000080';  # 删除 80 之前的日志
+SHOW BINARY LOGS;
+
 ```
 
 # 从库配置

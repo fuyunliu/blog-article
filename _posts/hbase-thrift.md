@@ -37,7 +37,7 @@ es = Elasticsearch('localhost',
                    )
 
 
-def fetch_one(index: str, doc_type: str, body: dict, size: int = 1) -> dict:
+def fetch_one(index, doc_type, body, size=1):
     """查询es获取第一条匹配的数据
 
     Arguments:
@@ -59,7 +59,7 @@ def fetch_one(index: str, doc_type: str, body: dict, size: int = 1) -> dict:
     return hits[0] if hits else None
 
 
-def fetch_all(index: str, doc_type: str, body: dict, size: int = 100) -> list:
+def fetch_all(index, doc_type, body, size=100):
     """查询es获取所有匹配的结果
 
     Arguments:
@@ -80,7 +80,7 @@ def fetch_all(index: str, doc_type: str, body: dict, size: int = 100) -> list:
     return res['hits']['hits']
 
 
-def build_term(field: str, value: str) -> dict:
+def build_term(field, value):
     """term
 
     Arguments:
@@ -103,7 +103,7 @@ def build_term(field: str, value: str) -> dict:
     return body
 
 
-def build_terms(field: str, values: list) -> dict:
+def build_terms(field, values):
     """terms
 
     Arguments:
@@ -123,6 +123,8 @@ def build_terms(field: str, values: list) -> dict:
     }
     return body
 
+
+def get(table_name)
 
 def get_row_with_columns(table_name, rowkey, columns):
     """根据 rowkey 从 hbase 获取一条数据

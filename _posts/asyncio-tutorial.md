@@ -8,6 +8,9 @@ tags:
 ---
 
 <!-- toc -->
+
+<!-- markdownlint-disable MD033 -->
+
 <blockquote><p>并发是指一次处理多件事。
 并行是指一次做多件事。
 二者不同，但是有联系。
@@ -20,7 +23,7 @@ Go 语言的创造者之一</p></blockquote>
 
 ---
 
-异步版 `hello-world`
+# 异步版 `hello-world`
 
 ```python
 import asyncio
@@ -38,9 +41,9 @@ asyncio.run(main())
 # main() --> <coroutine object main at 0x109be6d48>
 ```
 
-运行协程的三种方式：
+# 运行协程的三种方式
 
-- asyncio.run()
+- `asyncio.run()`
 - 使用 `await` 关键字
 
 ```python
@@ -79,6 +82,8 @@ async def main():
 
     print(f"finished at {time.strftime('%X')}")
 ```
+
+# Awaitable 对象
 
 `awaitable` 对象是指可以在 `await` 表达式中使用的对象。
 
@@ -126,6 +131,8 @@ asyncio.run(main())
 
 - 期物 `Futures`
 
+# 并发执行 Tasks
+
 使用 `asyncio.gather` 并发执行 `Tasks`
 
 ```python
@@ -152,7 +159,7 @@ async def main():
 asyncio.run(main())
 ```
 
-线程和协程的对比
+# 线程和协程的对比
 
 ```python
 # 线程版以动画形式显示文本旋转指针
@@ -250,3 +257,10 @@ print('Answer: ', result)
 # python3.7 执行方式
 asyncio.run(supervisor())
 ```
+
+- Task 对象像是实现协作式多任务的库（如 `gevent`）中的绿色线程（`green thread`）。
+- Task 对象用于驱动协程，Thread 对象用于调用可调用对象。
+- Task 对象不由自己手动实例化，而是由 `asyncio.create_task` 方法获取。
+- 获取的 Task 对象已经排定了运行时间，而 Thread 实例需要调用 `start` 方法运行。
+- 异步版 `slow_funtion` 是协程，由 `await` （就是 `yield from`）驱动。
+- 终止线程需要借助外部变量 `go`,终止 Task 可以调用 `Task.cancel()` 实例方法，在协程内部抛出 `CancelledError` 异常，协程内部也可以捕获这个异常，处理终止请求。

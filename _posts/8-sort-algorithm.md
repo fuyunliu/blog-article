@@ -27,6 +27,8 @@ def insert_sort(lists):
 
 <!-- more -->
 
+![insert_sort](/images/Insertion_sort_animation.gif)
+
 # 希尔排序
 
 ```python
@@ -50,6 +52,8 @@ def shell_sort(lists):
     return lists
 ```
 
+![shell_sort](/images/Sorting_shellsort_anim.gif)
+
 # 冒泡排序
 
 ```python
@@ -61,6 +65,8 @@ def bubble_sort(lists):
                 lists[i], lists[j] = lists[j], lists[i]
     return lists
 ```
+
+![bubble_sort](/images/Bubble_sort_animation.gif)
 
 # 快速排序
 
@@ -88,7 +94,9 @@ def quick_sort(lists, left=0, right=9):
     return lists
 ```
 
-# 直接选择排序
+![quick_sort](/images/Sorting_quicksort_anim.gif)
+
+# 选择排序
 
 ```python
 def select_sort(lists):
@@ -101,6 +109,8 @@ def select_sort(lists):
         lists[min], lists[i] = lists[i], lists[min]
     return lists
 ```
+
+![select_sort](/images/Selection_sort_animation.gif)
 
 # 堆排序
 
@@ -133,6 +143,8 @@ def heap_sort(lists):
     return lists
 ```
 
+![heap_sort](/images/Sorting_heapsort_anim.gif)
+
 # 归并排序
 
 ```python
@@ -160,6 +172,8 @@ def merge_sort(lists):
     return merge(left, right)
 ```
 
+![merge_sort](/images/Merge_sort_animation2.gif)
+
 # 基数排序
 
 ```python
@@ -178,6 +192,8 @@ def radix_sort(lists, radix=10):
             del z[:]
     return lists
 ```
+
+![merge_sort](/images/radix_sort.gif)
 
 # 测试
 

@@ -124,8 +124,6 @@ def build_terms(field, values):
     return body
 
 
-def get(table_name)
-
 def get_row_with_columns(table_name, rowkey, columns):
     """根据 rowkey 从 hbase 获取一条数据
 

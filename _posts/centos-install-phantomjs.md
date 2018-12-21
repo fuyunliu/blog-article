@@ -56,3 +56,30 @@ driver.set_page_load_timeout(10)
 driver.set_script_timeout(10)
 driver.get("https://www.baidu.com")
 ```
+
+# 推荐使用的 `Chrome` 用法
+
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+# 无界面浏览器
+options = Options()
+options.add_argument('headless')
+options.add_argument('disable-gpu')
+options.add_argument('window-size=1200x600')
+
+# 禁用 javascript
+prefs = {'profile.managed_default_content_settings.javascript': 2}
+options.add_experimental_option("prefs", prefs)
+
+# 禁止弹出式窗口
+prefs = {"profile.default_content_setting_values.notifications": 2}
+options.add_experimental_option("prefs", prefs)
+
+# 禁用图片
+prefs = {'profile.managed_default_content_settings.images': 2}
+options.add_experimental_option("prefs", prefs)
+
+driver = webdriver.Chrome(chrome_options=options)
+```

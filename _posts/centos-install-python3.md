@@ -78,3 +78,9 @@ python3 --version
 ```sh
 yum search python3 | grep devel
 ```
+
+一键更新 `python` 包
+
+```sh
+pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+```

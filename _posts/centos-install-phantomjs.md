@@ -82,4 +82,8 @@ prefs = {'profile.managed_default_content_settings.images': 2}
 options.add_experimental_option("prefs", prefs)
 
 driver = webdriver.Chrome(chrome_options=options)
+
+# 执行JS
+driver.execute_script('window.scrollTo(0, 0)')  # scroll to top
+driver.execute_script('window.scrollTo(0, document.body.scrollHeight)')  # end
 ```

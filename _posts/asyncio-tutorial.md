@@ -43,7 +43,7 @@ asyncio.run(main())
 
 # 运行协程的三种方式
 
-- `asyncio.run()`
+- `asyncio.run()`
 - 使用 `await` 关键字
 
 ```python

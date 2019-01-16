@@ -85,9 +85,9 @@ async def main():
 
 # Awaitable 对象
 
-`awaitable` 对象是指可以在 `await` 表达式中使用的对象。
+`awaitable` 对象是指可以在 `await` 表达式中使用的对象。
 
-`coroutines`, `Tasks` 和 `Futures` 是 `awaitable` 对象。
+`coroutines`, `Tasks` 和 `Futures` 是 `awaitable` 对象。
 
 - 协程 `coroutines`
 

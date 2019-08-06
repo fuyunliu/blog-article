@@ -29,7 +29,7 @@ def hello():
 
 ```
 
-# 最简单的启动方式
+## 最简单的启动方式
 
 ```python
 if __name__ == '__main__':
@@ -38,9 +38,7 @@ if __name__ == '__main__':
 
 这只能用于开发模式，可以设置`debug=True`开启调试模式，并且这是单线程同步的。
 
-# 用 tornado 驱动 flask
-
-## dsadada
+## 用 `tornado` 驱动 `flask`
 
 写一个`server.py`，并将上面`index.py`中的启动代码去掉，终端运行`python server.py`。
 
@@ -86,7 +84,7 @@ def test():
 
 用postman同时发起5个请求，后台按顺序打印0-9，5个请求是一个一个执行的。
 
-# 用 twisted 驱动 flask
+## 用 `twisted` 驱动 `flask`
 
 这个可以同时处理多个请求。
 

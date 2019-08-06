@@ -13,13 +13,13 @@ GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软�
 
 <!-- toc -->
 
-# 安装 screen
+## 安装 `screen`
 
 ```sh
 yum install -y screen
 ```
 
-# screen 常用命令
+## `screen` 常用命令
 
 新建一个Screen Session
 

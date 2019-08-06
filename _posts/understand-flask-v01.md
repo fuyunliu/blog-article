@@ -13,7 +13,7 @@ tags:
 
 <!-- toc -->
 
-# 导包部分
+## 导包部分
 
 ```python
 # python2.5 版本加入 with 语句，低于 2.5 需要引入，高于则忽略。
@@ -63,7 +63,7 @@ except (ImportError, AttributeError):
 
 ```
 
-# Request 和 Response
+## `Request` 和 `Response`
 
 `flask` 的 `Request` 和 `Response` 继承自 `werkzeug` 的 `Request` 和 `Response`。
 
@@ -108,7 +108,7 @@ class _RequestContext(object):
             _request_ctx_stack.pop()
 ```
 
-# 几个有用的函数
+## 几个有用的函数
 
 ```python
 def url_for(endpoint, **values):
@@ -174,7 +174,7 @@ def _get_package_path(name):
 
 ```
 
-# Flask 类
+## `Flask` 类
 
 ```python
 class Flask(object):
@@ -534,7 +534,7 @@ class Flask(object):
         return self.wsgi_app(environ, start_response)
 ```
 
-# 全局变量
+## 全局变量
 
 ```python
 _request_ctx_stack = LocalStack()
@@ -544,12 +544,12 @@ session = LocalProxy(lambda: _request_ctx_stack.top.session)
 g = LocalProxy(lambda: _request_ctx_stack.top.g)
 ```
 
-# werkzeug 的 Local，LocalStack 和 LocalProxy
+## `werkzeug` 的 `Local`，`LocalStack` 和 `LocalProxy`
 
 `Flask` 中有两个上下文（`Context`）：
 
-        1. 应用上下文（`App Context`）
-        2. 请求上下文（`Request Context`）
+1. 应用上下文（`App Context`）
+2. 请求上下文（`Request Context`）
 
 上下文就是函数运行时所需要的外部变量，当我们运行一个简单的求和函数 `sum` 是不需要外部变量的，而像 `Flask` 中的视图函数运行需要知道当前的请求的路由、表单和请求方法等等一些信息。
 

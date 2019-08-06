@@ -7,7 +7,7 @@ tags:
 - Python3
 ---
 
-# 安装 chrome
+## 安装 chrome
 
 ```sh
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -20,7 +20,7 @@ sudo apt-get install google-chrome-stable
 
 <!-- toc -->
 
-# 安装 chromedriver
+## 安装 chromedriver
 
 ```sh
 wget -N https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
@@ -29,7 +29,7 @@ chmod +x chromedriver
 cp chromedriver /usr/bin/
 ```
 
-# 安装 Xvfb
+## 安装 Xvfb
 
 ```sh
 sudo apt-get -y install xvfb gtk2-engines-pixbuf
@@ -39,7 +39,7 @@ sudo apt-get -y install imagemagick x11-apps
 Xvfb -ac :99 -screen 0 1280x1024x16 & export DISPLAY=:99
 ```
 
-# 测试脚本
+## 测试脚本
 
 ```python
 from selenium import webdriver
@@ -54,7 +54,7 @@ print(driver.title)
 driver.quit()
 ```
 
-# 遇到的问题
+## 遇到的问题
 
 `ubuntu server 18.04` 虽然内置 `python3` 版本，但是没有 `pip`
 在 `/etc/apt/sources.list` 添加下列源
@@ -71,7 +71,7 @@ sudo apt-get update
 sudo apt-get install python3-pip
 ```
 
-# 再用 pip 安装 selenium
+## 再用 `pip` 安装 `selenium`
 
 ```sh
 pip3 install selenium

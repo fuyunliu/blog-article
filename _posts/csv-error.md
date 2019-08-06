@@ -13,7 +13,7 @@ tags:
 
 <!-- toc -->
 
-# 字段包含 NULL 值
+## 字段包含 `NULL` 值
 
 csv 文件中字段包含 NULL 值会出错，解决方法是读取文件时把 NULL 值替换为空字符串。
 
@@ -25,7 +25,7 @@ with open('test.csv', 'rt', encoding='utf-8') as f:
     # do something with fc
 ```
 
-# OverflowError and maxInt
+## `OverflowError and maxInt`
 
 ```python
 import csv

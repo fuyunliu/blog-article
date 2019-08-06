@@ -14,13 +14,13 @@ tags:
 
 <!-- toc -->
 
-# 安装 `fontconfig` 依赖
+## 安装 `fontconfig` 依赖
 
 ```sh
 yum install -y fontconfig freetype freetype-devel fontconfig-devel libstdc++
 ```
 
-# 下载 `PhantomJS` 并解压
+## 下载 `PhantomJS` 并解压
 
 ```sh
 # 安装到此目录
@@ -42,7 +42,7 @@ ln -s /usr/local/phantomjs/bin/phantomjs /usr/bin/phantomjs
 phantomjs --version
 ```
 
-# 用 `selenium` 驱动 `PhantomJS`
+## 用 `selenium` 驱动 `PhantomJS`
 
 ```python
 from selenium import webdriver
@@ -57,7 +57,7 @@ driver.set_script_timeout(10)
 driver.get("https://www.baidu.com")
 ```
 
-# 推荐使用的 `Chrome` 用法
+## 推荐使用的 `Chrome` 用法
 
 ```python
 from selenium import webdriver

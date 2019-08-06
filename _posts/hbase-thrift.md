@@ -14,8 +14,6 @@ tags:
 <!-- more -->
 
 ```python
-# -*- coding: utf-8 -*-
-
 from thrift.transport import TSocket
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport

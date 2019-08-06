@@ -23,7 +23,7 @@ Go 语言的创造者之一</p></blockquote>
 
 ---
 
-# 异步版 `hello-world`
+## 异步版 `hello-world`
 
 ```python
 import asyncio
@@ -41,7 +41,7 @@ asyncio.run(main())
 # main() --> <coroutine object main at 0x109be6d48>
 ```
 
-# 运行协程的三种方式
+## 运行协程的三种方式
 
 - `asyncio.run()`
 - 使用 `await` 关键字
@@ -83,7 +83,7 @@ async def main():
     print(f"finished at {time.strftime('%X')}")
 ```
 
-# Awaitable 对象
+## Awaitable 对象
 
 `awaitable` 对象是指可以在 `await` 表达式中使用的对象。
 
@@ -131,7 +131,7 @@ asyncio.run(main())
 
 - 期物 `Futures`
 
-# 并发执行 Tasks
+## 并发执行 Tasks
 
 使用 `asyncio.gather` 并发执行 `Tasks`
 
@@ -159,7 +159,7 @@ async def main():
 asyncio.run(main())
 ```
 
-# 线程和协程的对比
+## 线程和协程的对比
 
 ```python
 # 线程版以动画形式显示文本旋转指针

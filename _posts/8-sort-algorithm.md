@@ -9,7 +9,7 @@ tags:
 
 <!-- toc -->
 
-# 插入排序
+## 插入排序
 
 ```python
 def insert_sort(lists):
@@ -29,7 +29,7 @@ def insert_sort(lists):
 
 ![insert_sort](/images/Insertion_sort_animation.gif)
 
-# 希尔排序
+## 希尔排序
 
 ```python
 def shell_sort(lists):
@@ -54,7 +54,7 @@ def shell_sort(lists):
 
 ![shell_sort](/images/Sorting_shellsort_anim.gif)
 
-# 冒泡排序
+## 冒泡排序
 
 ```python
 def bubble_sort(lists):
@@ -68,7 +68,7 @@ def bubble_sort(lists):
 
 ![bubble_sort](/images/Bubble_sort_animation.gif)
 
-# 快速排序
+## 快速排序
 
 ```python
 qs = lambda xs: ((len(xs) <= 1 and [xs]) or [qs([x for x in xs[1:] if x < xs[
@@ -96,7 +96,7 @@ def quick_sort(lists, left=0, right=9):
 
 ![quick_sort](/images/Sorting_quicksort_anim.gif)
 
-# 选择排序
+## 选择排序
 
 ```python
 def select_sort(lists):
@@ -112,7 +112,7 @@ def select_sort(lists):
 
 ![select_sort](/images/Selection_sort_animation.gif)
 
-# 堆排序
+## 堆排序
 
 ```python
 def adjust_heap(lists, i, size):
@@ -145,7 +145,7 @@ def heap_sort(lists):
 
 ![heap_sort](/images/Sorting_heapsort_anim.gif)
 
-# 归并排序
+## 归并排序
 
 ```python
 def merge(left, right):
@@ -174,7 +174,7 @@ def merge_sort(lists):
 
 ![merge_sort](/images/Merge_sort_animation2.gif)
 
-# 基数排序
+## 基数排序
 
 ```python
 import math
@@ -195,7 +195,7 @@ def radix_sort(lists, radix=10):
 
 ![merge_sort](/images/radix_sort.gif)
 
-# 测试
+## 测试
 
 ```python
 import random

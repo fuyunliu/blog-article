@@ -8,6 +8,7 @@ tags:
 ---
 
 list docker cli commands
+
 `docker --help`
 
 `docker contianer --help`
@@ -15,6 +16,10 @@ list docker cli commands
 docker version
 
 `docker --version`
+
+<!-- more -->
+
+<!-- toc -->
 
 docker info
 
@@ -41,6 +46,3 @@ run image
 login running container
 
 `docker exec -it <name> bash`
-
-
-

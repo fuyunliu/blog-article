@@ -1,4 +1,17 @@
-# Sqlalchemy 基本用法
+---
+title: Sqlalchemy 基本用法
+date: 2019-05-12 15:18:31
+categories:
+- 笔记
+tags:
+- Sqlalchemy
+---
+
+Sqlalchemy 基本用法
+
+<!-- more -->
+
+<!-- toc -->
 
 ## 通用导入
 
@@ -162,14 +175,15 @@ def init_db():
     Base.metadata.create_all(engine)
 ```
 
-## backref 和 back_populates
+## `backref` 和 `back_populates`
 
-1. Parent 下添加 `children = relationship("Child", back_populates="parent")`
+```python
+Parent 下添加 `children = relationship("Child", back_populates="parent")`
 
 创建p1 = Parent()和c1 = Child()失败，原因是One or more mappers failed to initialize，即back_populates必须在关系两端同时指定
 
-2. Parent下添加 `children = relationship("Child", back_populates="parent")`
-   Child下添加 `parent = relationship("Parent", back_populates="children")`
+Parent下添加 `children = relationship("Child", back_populates="parent")`
+Child下添加 `parent = relationship("Parent", back_populates="children")`
 
 Parent Attribute:
 Parent.children Parent.id Parent.metadata Parent.name Parent.query
@@ -181,7 +195,7 @@ p1 = Parent()
 c1 = Child()
 c1.parent = p1 or p1.children.append(c1)
 
-3. Parent下添加 `children = relationship("Child", backref="parent")`
+Parent下添加 `children = relationship("Child", backref="parent")`
 
 Parent Attribute:
 Parent.children Parent.id Parent.metadata Parent.name Parent.query
@@ -201,14 +215,12 @@ hasattr(c1, 'parent') // True
 hasattr(Parent, 'children') // True
 hasattr(p1, 'children') // True
 
-4. Child 下添加 `parent = relationship("Parent", backref="children")` 情况和 3 相同
-
-5. Parent下添加 `children = relationship("Child", backref="parent")`
-   Child下添加 `parent = relationship("Parent", backref="children")`
+Child 下添加 `parent = relationship("Parent", backref="children")` 情况和 3 相同
+Parent下添加 `children = relationship("Child", backref="parent")`
+Child下添加 `parent = relationship("Parent", backref="children")`
 
 创建p1 = Parent()和c1 = Child()失败，原因是One or more mappers failed to initialize
 因此两者只能使用其中之一
-
 
 lazy 指定如何加载相关记录，默认值是"select"
     select 首次访问时按需加载
@@ -219,6 +231,7 @@ lazy 指定如何加载相关记录，默认值是"select"
     dynamic 不加载记录,但提供加载记录的查询
 
 lazy = "dynamic"只能用于collections，不立即查询出结果集，而是提供一系列结果集的方法，可以基于结果集再次进行更精确的查找
+```
 
 ## default 和 server_default
 
@@ -231,7 +244,7 @@ from sqlalchemy import func, sql, text
 
 class Record(Base):
     __tablename__ = 'records
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(String(64), server_default=text('name'))
     created = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -256,22 +269,3 @@ class CustomQuery(BaseQuery):
 
 db = SQLAlchemy(query_class=CustomQuery)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
